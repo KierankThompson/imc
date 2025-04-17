@@ -6,13 +6,13 @@ from scipy.stats import linregress
 
 
 
-df = pd.read_csv("day1data\prices_round_1_day_0.csv", sep=';')
+df = pd.read_csv("round-1-island-data-bottle\prices_round_1_day_-2.csv", sep=';')
 squiddf = df[df['product'] == 'SQUID_INK']
-squiddf.fillna(0, inplace=True)
+squiddf.fillna(0)
 forestdf = df[df['product'] == 'RAINFOREST_RESIN']
-forestdf.fillna(0, inplace=True)
+forestdf.fillna(0)
 kelpdf = df[df['product'] == 'KELP']
-kelpdf.fillna(0, inplace=True)
+kelpdf.fillna(0)
 
 
 pd.set_option('display.max_columns', None)
@@ -22,6 +22,32 @@ pd.set_option('display.max_columns', None)
 squidReturns = squiddf['mid_price'].diff()[1:]
 forestReturns = forestdf['mid_price'].diff()[1:]
 kelpReturns = kelpdf['mid_price'].diff()[1:]
+
+
+
+dataframes = [squiddf, forestdf, kelpdf]
+mid_prices = np.array([df['mid_price'].values for df in dataframes])
+
+
+mid_prices = mid_prices.T
+
+
+product_labels = ['SQUID_INK', 'RAINFOREST_RESIN', 'KELP']
+
+returns = np.diff(mid_prices, axis=0) / mid_prices[:-1] * 100
+
+num_slices = 1
+slice_size = len(returns) // num_slices
+
+for i in range(num_slices):
+    start_idx = i * slice_size
+    end_idx = (i + 1) * slice_size if i < num_slices - 1 else len(returns)
+    sliced_returns = returns[start_idx:end_idx]
+    corr_matrix = np.corrcoef(sliced_returns, rowvar=False)
+    print(f"Correlation Matrix for Slice {i + 1}:")
+    print(pd.DataFrame(corr_matrix, index=product_labels, columns=product_labels))
+    print()
+
 
 
 """
@@ -54,48 +80,6 @@ plt.show()
 
 print(computeWeights(0.01))
 """
-#print(forestReturns.value_counts())
-
-#print(forestdf['mid_price'].mean())
-#print(forestdf['mid_price'].value_counts())
 
 
-total_bid_value = (
-    kelpdf['bid_price_1'] * kelpdf['bid_volume_1'] +
-    kelpdf['bid_price_2'] * kelpdf['bid_volume_2'] +
-    kelpdf['bid_price_3'] * kelpdf['bid_volume_3']
-)
-
-total_bid_volume = (
-    kelpdf['bid_volume_1'] +
-    kelpdf['bid_volume_2'] +
-    kelpdf['bid_volume_3']
-)
-
-
-
-
-total_ask_value = (
-    kelpdf['ask_price_1'] * kelpdf['ask_volume_1'] +
-    kelpdf['ask_price_2'] * kelpdf['ask_volume_2'] +
-    kelpdf['ask_price_3'] * kelpdf['ask_volume_3']
-)
-
-total_ask_volume = (
-    kelpdf['ask_volume_1'] +
-    kelpdf['ask_volume_2'] +
-    kelpdf['ask_volume_3']
-)
-
-
-
-vwap = (total_bid_value + total_ask_value) / (total_ask_volume + total_bid_volume)
-
-
-
-vwap_diff = vwap - kelpdf['mid_price']
-print(vwap_diff.value_counts())
-
-
-print(squiddf['ask_price_1'].value_counts())
 

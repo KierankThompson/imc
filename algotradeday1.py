@@ -14,35 +14,35 @@ def forestTrade(order_depth, curPos, pastPosition):
     print(f"This is vwap: {vwap}",end = " ")
     if vwap - meanPrice > 0:
         tradeVol = min(50,max(13,int(list(order_depth.buy_orders.items())[0][1])*1.25))
-        tradePrice = vwap + 1
+        tradePrice = meanPrice + 2
         return tradePrice, -tradeVol, True
     if vwap - meanPrice < 0:
         tradeVol = min(50,max(int(list(order_depth.sell_orders.items())[0][1]*1.25),13))
-        tradePrice = vwap - 1
+        tradePrice = meanPrice - 2
         return tradePrice, tradeVol, True
     else:
         if pastPosition+curPos < 1:
-            return 1000, -(curPos + pastPosition), False
+            return 1000, -curPos, False
         else:
-            return 1000, curPos + pastPosition, False
+            return 1000, -curPos, False
 def kelpTrade(order_depth,curPos, pastPosition):
-    meanPrice = 2036.5
+    meanPrice = 2036
     #vol stands for volume
     vwap = int((list(order_depth.sell_orders.items())[0][0] + list(order_depth.buy_orders.items())[0][0]) / 2)
     
     if vwap - meanPrice > 0:
-        tradeVol = min(50,max(5,int(list(order_depth.buy_orders.items())[0][1]*1.25)))
-        tradePrice = vwap + 1
+        tradeVol = min(50,max(10,int(list(order_depth.buy_orders.items())[0][1]*1.25)))
+        tradePrice = meanPrice + 2
         return tradePrice, -tradeVol, True
     if vwap - meanPrice < 0:
-        tradeVol = min(50,max(int(list(order_depth.sell_orders.items())[0][1]*1.25),5))
-        tradePrice = vwap - 1
+        tradeVol = min(50,max(int(list(order_depth.sell_orders.items())[0][1]*1.25),10))
+        tradePrice = meanPrice - 2
         return tradePrice, tradeVol, True
     else:
         if pastPosition+curPos < 1:
-            return 2037, -(curPos + pastPosition), False
+            return 2037, -curPos, False
         else:
-            return 2037, curPos + pastPosition, False
+            return 2037, -curPos, False
         
 def squidTrade(order_depth,curPos, pastPosition):
     meanPrice = 1956
@@ -51,18 +51,18 @@ def squidTrade(order_depth,curPos, pastPosition):
     print(f"This is vwap: {vwap}",end = " ")
     print(f"This is mean price {meanPrice}",end = "")
     if vwap - meanPrice > 1:
-        tradeVol = min(50,max(2,int(list(order_depth.buy_orders.items())[0][1]*1.25)))
+        tradeVol = min(50,max(10,int(list(order_depth.buy_orders.items())[0][1]*1.25)))
         tradePrice = vwap + 2
         return tradePrice, -tradeVol, True
     if vwap - meanPrice < -1:
-        tradeVol = min(50,max(int(list(order_depth.sell_orders.items())[0][1]*1.25),2))
+        tradeVol = min(50,max(int(list(order_depth.sell_orders.items())[0][1]*1.25),10))
         tradePrice = vwap - 2
         return tradePrice, tradeVol, True
     else:
         if pastPosition+curPos < 1:
-            return 1956, -(curPos + pastPosition), False
+            return 1956, -curPos, False
         else:
-            return 1956, curPos + pastPosition, False
+            return 1956, -curPos, False
 
 
 
@@ -92,7 +92,7 @@ class Trader:
                     tradePrice, tradeVol, pos = forestTrade(order_depth, 0, int(data[0]))
                 #print(f"Trade Price: {tradePrice} Trade vol: {tradeVol}", end = " ")
                 #print(f"Position: {state.position}", end = " ")
-                o = Order(product, tradePrice, tradeVol)
+                o = Order(product, tradePrice, int(tradeVol))
                 
                 #print(f"Order: {o}", end = " ")
                 #print(f"orders: {orders}", end = " ")
@@ -104,7 +104,7 @@ class Trader:
                     tradePrice, tradeVol2, pos2 = kelpTrade(order_depth, 0, int(data[1]))
                 #print(f"Trade Price: {tradePrice} Trade vol: {tradeVol}", end = " ")
                 #print(f"Position: {state.position}", end = " ")
-                o = Order(product, tradePrice, tradeVol2)
+                o = Order(product, tradePrice, int(tradeVol2))
                 
                 #print(f"Order: {o}", end = " ")
                 #print(f"orders: {orders}", end = " ")
@@ -116,7 +116,7 @@ class Trader:
                     tradePrice, tradeVol3, pos3 = kelpTrade(order_depth, 0, int(data[2]))
                 #print(f"Trade Price: {tradePrice} Trade vol: {tradeVol}", end = " ")
                 #print(f"Position: {state.position}", end = " ")
-                o = Order(product, tradePrice, tradeVol3)
+                o = Order(product, tradePrice, int(tradeVol3))
                 
                 #print(f"Order: {o}", end = " ")
                 #print(f"orders: {orders}", end = " ")
